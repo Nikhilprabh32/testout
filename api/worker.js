@@ -33,17 +33,17 @@ export default {
       switch (url.pathname) {
         case "/api/fantasy":       return cors(await cached(request, ctx, 120, () => fantasy(env)), env);
         case "/api/spotify":       return cors(await cached(request, ctx, 20, () => spotify(env)), env);
-        case "/api/fantasy/teams": return setupOnly(env, () => fantasyTeams(env));
-        case "/api/yahoo/login":   return setupOnly(env, () => Response.redirect(`${YAHOO_AUTH}?${qs({ client_id: env.YAHOO_CLIENT_ID, redirect_uri: origin + "/api/yahoo/callback", response_type: "code", language: "en-us", ...(env.YAHOO_SCOPE ? { scope: env.YAHOO_SCOPE } : {}) })}`, 302));
-        case "/api/yahoo/callback":   return setupOnly(env, () => exchange(YAHOO_TOKEN, env.YAHOO_CLIENT_ID, env.YAHOO_CLIENT_SECRET, url.searchParams.get("code"), origin + "/api/yahoo/callback", "YAHOO_REFRESH_TOKEN"));
-        case "/api/spotify/login": return setupOnly(env, () => Response.redirect(`${SPOTIFY_AUTH}?${qs({ client_id: env.SPOTIFY_CLIENT_ID, redirect_uri: origin + "/api/spotify/callback", response_type: "code", scope: "user-read-currently-playing user-read-recently-played" })}`, 302));
-        case "/api/spotify/callback": return setupOnly(env, () => exchange(SPOTIFY_TOKEN, env.SPOTIFY_CLIENT_ID, env.SPOTIFY_CLIENT_SECRET, url.searchParams.get("code"), origin + "/api/spotify/callback", "SPOTIFY_REFRESH_TOKEN"));
+        case "/api/fantasy/teams": return await setupOnly(env, async () => fantasyTeams(env));
+        case "/api/yahoo/login":   return await setupOnly(env, async () => Response.redirect(`${YAHOO_AUTH}?${qs({ client_id: env.YAHOO_CLIENT_ID, redirect_uri: origin + "/api/yahoo/callback", response_type: "code", language: "en-us", ...(env.YAHOO_SCOPE ? { scope: env.YAHOO_SCOPE } : {}) })}`, 302));
+        case "/api/yahoo/callback":   return await setupOnly(env, async () => exchange(YAHOO_TOKEN, env.YAHOO_CLIENT_ID, env.YAHOO_CLIENT_SECRET, url.searchParams.get("code"), origin + "/api/yahoo/callback", "YAHOO_REFRESH_TOKEN"));
+        case "/api/spotify/login": return await setupOnly(env, async () => Response.redirect(`${SPOTIFY_AUTH}?${qs({ client_id: env.SPOTIFY_CLIENT_ID, redirect_uri: origin + "/api/spotify/callback", response_type: "code", scope: "user-read-currently-playing user-read-recently-played" })}`, 302));
+        case "/api/spotify/callback": return await setupOnly(env, async () => exchange(SPOTIFY_TOKEN, env.SPOTIFY_CLIENT_ID, env.SPOTIFY_CLIENT_SECRET, url.searchParams.get("code"), origin + "/api/spotify/callback", "SPOTIFY_REFRESH_TOKEN"));
         default:
           // not an API route: serve the website files
           return env.ASSETS ? env.ASSETS.fetch(request) : new Response("Not found", { status: 404 });
       }
     } catch (err) {
-      return cors(json({ error: String(err.message || err) }, 502), env);
+      return cors(json({ error: String(err.message || err), route: url.pathname }, 502), env);
     }
   },
 };
@@ -74,13 +74,15 @@ async function cached(request, ctx, seconds, build) {
   if (out.ok) ctx.waitUntil(cache.put(key, out.clone()));
   return out;
 }
-async function refresh(tokenUrl, id, secret, refreshToken) {
+async function refresh(tokenUrl, id, secret, refreshToken, extra = {}) {
+  if (!id || !secret) throw new Error("Missing client ID or client secret in Cloudflare settings");
+  if (!refreshToken) throw new Error("Missing refresh token: finish the /login step and save the token in Cloudflare");
   const r = await fetch(tokenUrl, {
     method: "POST",
     headers: { Authorization: basic(id, secret), "Content-Type": "application/x-www-form-urlencoded" },
-    body: qs({ grant_type: "refresh_token", refresh_token: refreshToken, redirect_uri: "oob" }),
+    body: qs({ grant_type: "refresh_token", refresh_token: refreshToken, ...extra }),
   });
-  const d = await r.json();
+  const d = await r.json().catch(() => ({}));
   if (!r.ok || !d.access_token) throw new Error("token refresh failed: " + (d.error_description || d.error || r.status));
   return d.access_token;
 }
@@ -112,8 +114,9 @@ function dig(node, key) {
 }
 const items = (obj, key) => obj ? Object.keys(obj).filter((k) => /^\d+$/.test(k)).map((k) => obj[k][key]) : [];
 
-async function yahoo(env, path) {
-  const token = await refresh(YAHOO_TOKEN, env.YAHOO_CLIENT_ID, env.YAHOO_CLIENT_SECRET, env.YAHOO_REFRESH_TOKEN);
+async function yahoo(env, path, origin) {
+  const token = await refresh(YAHOO_TOKEN, env.YAHOO_CLIENT_ID, env.YAHOO_CLIENT_SECRET, env.YAHOO_REFRESH_TOKEN,
+    { client_id: env.YAHOO_CLIENT_ID, client_secret: env.YAHOO_CLIENT_SECRET, redirect_uri: "https://testout.nikhilprabh32.workers.dev/api/yahoo/callback" });
   const r = await fetch(`${YAHOO_API}/${path}${path.includes("?") ? "&" : "?"}format=json`, { headers: { Authorization: `Bearer ${token}` } });
   if (!r.ok) throw new Error(`Yahoo ${r.status}: ${(await r.text()).slice(0, 200)}`);
   return (await r.json()).fantasy_content;
