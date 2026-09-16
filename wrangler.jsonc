@@ -10,4 +10,8 @@
   },
   // keep the secrets you add in the Cloudflare dashboard when GitHub redeploys
   "keep_vars": true
+
+// ...
+  "vars": {},
+  // ...
 }
