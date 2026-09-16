@@ -34,7 +34,7 @@ export default {
         case "/fantasy":       return cors(await cached(request, ctx, 120, () => fantasy(env)), env);
         case "/spotify":       return cors(await cached(request, ctx, 20, () => spotify(env)), env);
         case "/fantasy/teams": return setupOnly(env, () => fantasyTeams(env));
-        case "/yahoo/login":   return setupOnly(env, () => Response.redirect(`${YAHOO_AUTH}?${qs({ client_id: env.YAHOO_CLIENT_ID, redirect_uri: origin + "/yahoo/callback", response_type: "code", language: "en-us" })}`, 302));
+        case "/yahoo/login":   return setupOnly(env, () => Response.redirect(`${YAHOO_AUTH}?${qs({ client_id: env.YAHOO_CLIENT_ID, redirect_uri: origin + "/yahoo/callback", response_type: "code", scope: env.YAHOO_SCOPE || "fspt-r", language: "en-us" })}`, 302));
         case "/yahoo/callback":   return setupOnly(env, () => exchange(YAHOO_TOKEN, env.YAHOO_CLIENT_ID, env.YAHOO_CLIENT_SECRET, url.searchParams.get("code"), origin + "/yahoo/callback", "YAHOO_REFRESH_TOKEN"));
         case "/spotify/login": return setupOnly(env, () => Response.redirect(`${SPOTIFY_AUTH}?${qs({ client_id: env.SPOTIFY_CLIENT_ID, redirect_uri: origin + "/spotify/callback", response_type: "code", scope: "user-read-currently-playing user-read-recently-played" })}`, 302));
         case "/spotify/callback": return setupOnly(env, () => exchange(SPOTIFY_TOKEN, env.SPOTIFY_CLIENT_ID, env.SPOTIFY_CLIENT_SECRET, url.searchParams.get("code"), origin + "/spotify/callback", "SPOTIFY_REFRESH_TOKEN"));
