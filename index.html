@@ -518,6 +518,21 @@
     .honors .field { grid-column: 2; }
   }
   @media (max-width: 520px) { .row2 { grid-template-columns: minmax(0, 1fr); } }
+
+/* ---------- About Me: intro paragraph up front, "Read more" reveals the rest of the story ---------- */
+  .about-rest { overflow: hidden; display: grid; gap: 16px; max-height: 0; opacity: 0; transition: max-height .6s cubic-bezier(.2,.7,.2,1), opacity .45s ease; }
+  .about-rest:not(.open) { margin-top: -16px; }
+  .about-rest.open { opacity: 1; }
+  .about-more {
+    justify-self: start; display: inline-flex; align-items: center; gap: 8px; margin-top: -2px;
+    font: 700 .85rem var(--sans); color: #4fa3dc; background: transparent;
+    border: 1.5px solid rgba(79,163,220,.7); border-radius: 999px; padding: 8px 16px;
+    transition: background .2s, color .2s, box-shadow .2s, border-color .2s;
+  }
+  .about-more:hover, .about-more:focus-visible { background: #4fa3dc; border-color: #4fa3dc; color: #000; box-shadow: 0 0 22px rgba(0,110,190,.7); outline: none; }
+  .about-more .arr { display: inline-block; transition: transform .3s; }
+  .about-more[aria-expanded="true"] .arr { transform: rotate(180deg); }
+
 </style>
 <script>document.documentElement.classList.add("js");window.echarts=window.echarts||{registerMap:function(n,g){window.__worldGeo=g;document.dispatchEvent(new Event("worldgeo"));}};</script>
 <script async src="https://cdn.jsdelivr.net/npm/echarts@4.9.0/map/js/world.js"></script>
@@ -1723,6 +1738,47 @@
   new IntersectionObserver((entries) => {
     if (!started && entries[0].isIntersecting) { started = true; play(); }
   }, { threshold: .45 }).observe(wrap);
+})();
+</script>
+
+<script>
+/* About Me: show the intro paragraph, "Read more" reveals the rest */
+(() => {
+  const copy = document.querySelector(".about-me .about-copy");
+  if (!copy) return;
+  const paras = [...copy.querySelectorAll(":scope > p")];
+  if (paras.length < 2) return;
+
+  const rest = document.createElement("div");
+  rest.className = "about-rest"; rest.id = "about-rest";
+  paras.slice(1).forEach((p) => rest.appendChild(p));
+
+  const btn = document.createElement("button");
+  btn.type = "button"; btn.className = "about-more";
+  btn.setAttribute("aria-controls", "about-rest"); btn.setAttribute("aria-expanded", "false");
+  btn.innerHTML = '<span class="lbl">Read more about me</span><span class="arr" aria-hidden="true">↓</span>';
+
+  paras[0].after(btn);
+  btn.after(rest);
+  rest.inert = true;
+
+  let open = false;
+  btn.addEventListener("click", () => {
+    open = !open;
+    btn.setAttribute("aria-expanded", open);
+    btn.querySelector(".lbl").textContent = open ? "Show less" : "Read more about me";
+    rest.inert = !open;
+    rest.classList.toggle("open", open);
+    rest.style.maxHeight = rest.scrollHeight + "px";
+    if (open) {
+      rest.addEventListener("transitionend", function done(e) {
+        if (e.propertyName === "max-height" && open) rest.style.maxHeight = "none";
+        rest.removeEventListener("transitionend", done);
+      });
+    } else {
+      requestAnimationFrame(() => requestAnimationFrame(() => { rest.style.maxHeight = "0px"; }));
+    }
+  });
 })();
 </script>
 
