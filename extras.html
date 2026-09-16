@@ -194,7 +194,7 @@
         <p class="updated">Updated ${new Date(d.updatedAt || Date.now()).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}</p>`;
       setStatus("ff-status", true, "Live from Yahoo");
     } catch (e) {
-      setStatus("ff-status", false, "Couldn’t reach Yahoo right now");
+      setStatus("ff-status", false, "Coming soon");
     }
   }
 
