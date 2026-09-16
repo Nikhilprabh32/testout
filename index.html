@@ -533,6 +533,9 @@
   .about-more .arr { display: inline-block; transition: transform .3s; }
   .about-more[aria-expanded="true"] .arr { transform: rotate(180deg); }
 
+
+  .extras-link { color: #4fa3dc; }
+  @media (max-width: 700px) { .extras-li { display: none; } }
 </style>
 <script>document.documentElement.classList.add("js");window.echarts=window.echarts||{registerMap:function(n,g){window.__worldGeo=g;document.dispatchEvent(new Event("worldgeo"));}};</script>
 <script async src="https://cdn.jsdelivr.net/npm/echarts@4.9.0/map/js/world.js"></script>
@@ -550,6 +553,7 @@
       <li><a href="#experience" data-target="experience">Experience</a></li>
       <li><a href="#projects" data-target="projects">Projects</a></li>
       <li><a href="#contact" data-target="contact">Contact</a></li>
+      <li class="extras-li"><a href="extras.html" class="extras-link">Extra Features</a></li>
     </ul>
     <button class="cmd-btn" type="button" id="cmd-open" aria-label="Open command menu"><span class="cmd-key">⌘K</span></button>
     </div>
