@@ -12,7 +12,7 @@
   // Public settings (safe to be on GitHub)
   "vars": {
     "YAHOO_CLIENT_ID": "dj0yJmk9cXlydkRuemM0UE5MJmQ9WVdrOVlrSndSM0Z4WVRJbWNHbzlNQT09JnM9Y29uc3VtZXJzZWNyZXQmc3Y9MCZ4PTMy",
-    "SPOTIFY_CLIENT_ID": "PASTE_SPOTIFY_CLIENT_ID_HERE",
+    "SPOTIFY_CLIENT_ID": "0e4824be9693412fa1887f4ece2d8706",
     "SETUP_ENABLED": "true"
   },
 
