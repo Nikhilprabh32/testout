@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Extra Features · Nikhil Prabhu</title>
+<meta name="description" content="Games, tools and gimmicks from Nikhil Prabhu.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='2' y='2' width='60' height='60' rx='14' fill='%23000' stroke='%2300538C' stroke-width='4'/%3E%3Ctext x='32' y='43' text-anchor='middle' font-family='Arial Black,Arial,Helvetica,sans-serif' font-weight='900' font-size='30' letter-spacing='-2'%3E%3Ctspan fill='%23fff'%3EN%3C/tspan%3E%3Ctspan fill='%232a8ad6'%3EP%3C/tspan%3E%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112,500;112,800&family=JetBrains+Mono:wght@400;500;700&family=Orbitron:wght@800&display=swap">
+<style>
+  :root {
+    --bg: #000; --mavs-blue: #00538C; --blue: #4fa3dc; --blue-2: #2a8ad6; --text: #fff; --soft: #cfd6dd; --dim: #6f7a85;
+    --sans: "Archivo", "Helvetica Neue", Arial, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+    color-scheme: dark;
+  }
+  html { scroll-behavior: smooth; background: var(--bg); }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--sans); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  a { color: inherit; text-decoration: none; }
+  button { font: inherit; }
+  :focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+
+  .nav { position: sticky; top: 0; z-index: 10; background: linear-gradient(to bottom, rgba(0,0,0,.96), rgba(0,0,0,.82) 70%, rgba(0,0,0,0)); padding-top: env(safe-area-inset-top, 0px); }
+  .nav-inner { max-width: 1280px; margin: 0 auto; height: 64px; padding-inline: clamp(16px, 4vw, 48px); display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .wordmark { font-weight: 800; font-size: 1.5rem; letter-spacing: -.02em; }
+  .back { font-weight: 500; font-size: .95rem; display: inline-flex; gap: 8px; align-items: center; transition: color .2s; }
+  .back:hover { color: var(--blue); }
+
+  main { max-width: 1280px; margin: 0 auto; padding: clamp(40px, 7vw, 90px) clamp(16px, 4vw, 48px) 80px; }
+  .page-title { margin: 0; font-weight: 800; letter-spacing: -.035em; line-height: 1; font-size: clamp(2.6rem, 8vw, 5.4rem); }
+  .page-title .dot { color: var(--mavs-blue); text-shadow: 0 0 22px rgba(0,83,140,.7); }
+  .page-sub { margin: 14px 0 0; color: var(--soft); font-size: 1.1rem; max-width: 56ch; }
+
+  .grid { margin-top: 64px; display: grid; gap: 64px clamp(20px, 3vw, 36px); grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+  .wide { grid-column: 1 / -1; }
+  .panel { position: relative; border: 2px solid #fff; border-radius: 6px; padding: 44px clamp(18px, 3vw, 34px) clamp(22px, 3vw, 32px); box-shadow: 0 0 38px rgba(255,255,255,.07); background: var(--bg); }
+  .panel-title { position: absolute; top: 0; left: clamp(14px, 2.4vw, 26px); transform: translateY(-54%); margin: 0; padding: 0 12px; background: var(--bg); color: var(--mavs-blue); text-shadow: 0 0 24px rgba(0,83,140,.65); font-weight: 800; font-size: clamp(1.5rem, 2.8vw, 2.2rem); line-height: 1; white-space: nowrap; }
+  .panel-note { margin: 0 0 18px; color: var(--soft); }
+  .kbd { font: 600 .75rem var(--mono); border: 1px solid rgba(255,255,255,.3); border-bottom-width: 2px; border-radius: 4px; padding: 1px 6px; color: var(--soft); }
+
+  .btn { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; font-size: .95rem; color: #fff; background: transparent; border: 1.5px solid rgba(255,255,255,.85); border-radius: 999px; padding: 11px 20px; cursor: pointer; transition: background .2s, color .2s, border-color .2s, box-shadow .2s; }
+  .btn:hover { border-color: var(--blue); box-shadow: 0 0 20px rgba(0,83,140,.6); }
+  .btn.primary { background: #fff; color: #000; border-color: #fff; }
+  .btn.primary:hover { background: var(--blue); border-color: var(--blue); }
+
+  /* ---- Free throw game ---- */
+  .game { display: grid; grid-template-columns: minmax(0, 1fr) 190px; gap: 22px; align-items: stretch; }
+  .court { position: relative; border: 1.5px solid rgba(255,255,255,.4); border-radius: 6px; overflow: hidden; background: radial-gradient(120% 80% at 50% 100%, rgba(0,83,140,.28), transparent 60%), #02060a; }
+  #court { display: block; width: 100%; aspect-ratio: 16 / 9; touch-action: manipulation; cursor: pointer; }
+  .flash { position: absolute; left: 50%; top: 18%; transform: translate(-50%, 0) scale(.9); font: 800 clamp(1.6rem, 4vw, 2.8rem) var(--sans); letter-spacing: -.02em; opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s; text-shadow: 0 0 24px rgba(0,110,190,.9); }
+  .flash.show { opacity: 1; transform: translate(-50%, 0) scale(1); }
+  .board { border: 2px solid #fff; border-radius: 6px; display: grid; align-content: start; background: repeating-linear-gradient(0deg, rgba(255,255,255,.025) 0 2px, transparent 2px 4px); }
+  .stat { padding: 14px 16px; display: grid; gap: 4px; }
+  .stat + .stat { border-top: 1px solid rgba(255,255,255,.15); }
+  .led { font: 800 2rem "Orbitron", var(--mono); color: #5db1ea; text-shadow: 0 0 12px rgba(0,110,190,.9); font-variant-numeric: tabular-nums; line-height: 1; }
+  .lbl { font: 600 .68rem var(--mono); letter-spacing: .12em; text-transform: uppercase; color: #aab4be; }
+  .game-foot { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 16px; }
+  .game-foot .hint { font: 500 .8rem var(--mono); color: var(--dim); }
+
+  /* ---- Treadmill calculator ---- */
+  .calc { display: grid; gap: 18px; }
+  .slider { display: grid; gap: 8px; }
+  .slider .top { display: flex; justify-content: space-between; align-items: baseline; }
+  .slider label { font: 600 .72rem var(--mono); letter-spacing: .12em; text-transform: uppercase; color: #aab4be; }
+  .slider output { font-weight: 800; font-size: 1.1rem; font-variant-numeric: tabular-nums; }
+  input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 6px; border-radius: 999px; background: linear-gradient(90deg, var(--blue-2) var(--fill, 50%), rgba(255,255,255,.15) var(--fill, 50%)); outline-offset: 6px; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #fff; border: 3px solid var(--blue-2); box-shadow: 0 0 12px rgba(42,138,214,.8); cursor: pointer; }
+  input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: #fff; border: 3px solid var(--blue-2); box-shadow: 0 0 12px rgba(42,138,214,.8); cursor: pointer; }
+  .results { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border: 1.5px solid rgba(255,255,255,.35); border-radius: 6px; overflow: hidden; }
+  .results div { padding: 14px 16px; display: grid; gap: 4px; }
+  .results div:nth-child(even) { border-left: 1px solid rgba(255,255,255,.12); }
+  .results div:nth-child(n+3) { border-top: 1px solid rgba(255,255,255,.12); }
+  .results .led { font-size: 1.6rem; }
+  .fine { margin: 0; font: 500 .72rem var(--mono); color: var(--dim); line-height: 1.6; }
+
+  /* ---- Hypotheticals ---- */
+  .hypo { display: grid; gap: 18px; }
+  .hypo-q { margin: 0; font-weight: 800; font-size: clamp(1.25rem, 2.2vw, 1.6rem); line-height: 1.3; min-height: 3.9em; text-wrap: balance; }
+  .choices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .choice { text-align: left; color: #fff; background: rgba(255,255,255,.03); border: 1.5px solid rgba(255,255,255,.45); border-radius: 8px; padding: 16px; cursor: pointer; font-weight: 600; line-height: 1.4; transition: border-color .2s, box-shadow .2s, background .2s; min-height: 88px; }
+  .choice:hover { border-color: var(--blue); }
+  .choice[aria-pressed="true"] { border-color: var(--blue); background: rgba(0,83,140,.3); box-shadow: 0 0 22px rgba(0,110,190,.5); }
+  .choice .tag { display: block; font: 700 .68rem var(--mono); letter-spacing: .12em; color: var(--blue); margin-bottom: 6px; }
+  .hypo-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .hypo-count { font: 500 .8rem var(--mono); color: var(--dim); }
+
+  .soon { border-style: dashed; border-color: rgba(255,255,255,.35); box-shadow: none; min-height: 160px; display: grid; place-items: center; text-align: center; }
+  .soon .panel-title { color: var(--dim); text-shadow: none; }
+  .soon p { margin: 0; font: 500 .9rem var(--mono); color: var(--dim); }
+
+  .toast { position: fixed; left: 50%; bottom: 26px; transform: translate(-50%, 20px); opacity: 0; pointer-events: none; background: #fff; color: #000; font-weight: 700; padding: 11px 18px; border-radius: 999px; box-shadow: 0 0 30px rgba(0,83,140,.6); transition: opacity .25s, transform .25s; z-index: 50; }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  @media (hover: hover) and (pointer: fine) {
+    html, a, button { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3E%3Cpath d='M3 2 L3 24 L9 18.5 L13 27 L17 25.2 L13 16.8 L21 16.8 Z' fill='%23ffffff' stroke='%2300538C' stroke-width='2' stroke-linejoin='round'/%3E%3C/svg%3E") 3 2, auto; }
+  }
+  #trail { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 40; }
+
+  @media (max-width: 900px) {
+    .grid { grid-template-columns: minmax(0, 1fr); }
+    .game { grid-template-columns: minmax(0, 1fr); }
+    .board { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .stat + .stat { border-top: 0; border-left: 1px solid rgba(255,255,255,.15); }
+    .led { font-size: 1.4rem; }
+  }
+  @media (max-width: 520px) {
+    .choices { grid-template-columns: minmax(0, 1fr); }
+    .board { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .stat:nth-child(3) { border-left: 0; }
+    .stat:nth-child(n+3) { border-top: 1px solid rgba(255,255,255,.15); }
+  }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+<canvas id="trail" aria-hidden="true"></canvas>
+
+<header class="nav">
+  <div class="nav-inner">
+    <a class="wordmark" href="index.html">Nik.</a>
+    <a class="back" href="index.html">← Back to main site</a>
+  </div>
+</header>
+
+<main>
+  <h1 class="page-title">Extra Features<span class="dot">.</span></h1>
+  <p class="page-sub">The fun stuff that didn’t fit on the main page. Games, tools, and whatever I build next.</p>
+
+  <div class="grid">
+    <!-- ========== FEATURE: Free throw game ========== -->
+    <section class="panel wide" aria-labelledby="ft-title">
+      <h2 class="panel-title" id="ft-title">Free Throw Challenge</h2>
+      <p class="panel-note">Time the power meter and knock it down. Click the court, or press <span class="kbd">Space</span>. Hit the glowing zone for a swish.</p>
+      <div class="game">
+        <div class="court">
+          <canvas id="court" width="960" height="540" aria-label="Free throw game: press space or click to shoot"></canvas>
+          <div class="flash" id="flash" aria-live="polite"></div>
+        </div>
+        <div class="board" aria-label="Scoreboard">
+          <div class="stat"><span class="led" id="s-makes">0</span><span class="lbl">Makes</span></div>
+          <div class="stat"><span class="led" id="s-pct">0%</span><span class="lbl">Shooting</span></div>
+          <div class="stat"><span class="led" id="s-streak">0</span><span class="lbl">Streak</span></div>
+          <div class="stat"><span class="led" id="s-best">0</span><span class="lbl">Best streak</span></div>
+        </div>
+      </div>
+      <div class="game-foot">
+        <button class="btn primary" type="button" id="shoot">Shoot</button>
+        <button class="btn" type="button" id="reset-game">Reset stats</button>
+        <span class="hint">Best streak is saved in your browser.</span>
+      </div>
+    </section>
+
+    <!-- ========== FEATURE: Incline treadmill calculator ========== -->
+    <section class="panel" aria-labelledby="tm-title">
+      <h2 class="panel-title" id="tm-title">Incline Treadmill Calculator</h2>
+      <p class="panel-note">My favorite cardio, quantified. Dial in a session and see what it adds up to.</p>
+      <div class="calc">
+        <div class="slider"><div class="top"><label for="tm-speed">Speed</label><output id="o-speed" for="tm-speed"></output></div><input id="tm-speed" type="range" min="1" max="4.5" step="0.1" value="3"></div>
+        <div class="slider"><div class="top"><label for="tm-incline">Incline</label><output id="o-incline" for="tm-incline"></output></div><input id="tm-incline" type="range" min="0" max="15" step="0.5" value="12"></div>
+        <div class="slider"><div class="top"><label for="tm-min">Time</label><output id="o-min" for="tm-min"></output></div><input id="tm-min" type="range" min="5" max="60" step="1" value="30"></div>
+        <div class="slider"><div class="top"><label for="tm-lb">Body weight</label><output id="o-lb" for="tm-lb"></output></div><input id="tm-lb" type="range" min="100" max="300" step="1" value="175"></div>
+        <div class="results">
+          <div><span class="led" id="r-cal">0</span><span class="lbl">Calories</span></div>
+          <div><span class="led" id="r-ft">0</span><span class="lbl">Vertical feet</span></div>
+          <div><span class="led" id="r-mi">0</span><span class="lbl">Miles</span></div>
+          <div><span class="led" id="r-floors">0</span><span class="lbl">Floors climbed</span></div>
+        </div>
+        <p class="fine" id="r-fun"></p>
+        <p class="fine">Estimates use the ACSM walking equation. Real numbers vary person to person.</p>
+      </div>
+    </section>
+
+    <!-- ========== FEATURE: Hypotheticals ========== -->
+    <section class="panel" aria-labelledby="hy-title">
+      <h2 class="panel-title" id="hy-title">Favorite Hypotheticals</h2>
+      <p class="panel-note">The debates I love having. Pick a side, then hit me up and defend it.</p>
+      <div class="hypo">
+        <p class="hypo-q" id="hy-q"></p>
+        <div class="choices">
+          <button class="choice" type="button" id="hy-a" aria-pressed="false"></button>
+          <button class="choice" type="button" id="hy-b" aria-pressed="false"></button>
+        </div>
+        <div class="hypo-foot">
+          <button class="btn" type="button" id="hy-next">New hypothetical ↻</button>
+          <span class="hypo-count" id="hy-count"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== ADD NEW FEATURES HERE ==========
+         Copy this block, change the title, and put your feature inside. -->
+    <section class="panel soon wide" aria-labelledby="soon-title">
+      <h2 class="panel-title" id="soon-title">More Coming Soon</h2>
+      <p>Next build in progress…</p>
+    </section>
+  </div>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const $ = (id) => document.getElementById(id);
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+  };
+  const toastEl = $("toast"); let tt;
+  const toast = (m) => { toastEl.textContent = m; toastEl.classList.add("show"); clearTimeout(tt); tt = setTimeout(() => toastEl.classList.remove("show"), 1800); };
+
+  /* =====================================================================
+     FREE THROW CHALLENGE
+     ===================================================================== */
+  const cv = $("court"), ctx = cv.getContext("2d");
+  const CW = 960, CH = 540, G = 1500;
+  const START = { x: 170, y: 420 }, RIM = { y: 225, front: 732, back: 792 }, BOARD_X = 812, BALL_R = 17;
+  const ANGLE = 55 * Math.PI / 180, VMIN = 880, VMAX = 1240;
+  // speed that drops the ball through the middle of the rim
+  const IDEAL = (() => { const dx = (RIM.front + RIM.back) / 2 - START.x, dy = RIM.y - START.y; const t = Math.sqrt((dx * Math.tan(ANGLE) + dy) * 2 / G); return dx / (Math.cos(ANGLE) * t); })();
+  const SWEET = (IDEAL - VMIN) / (VMAX - VMIN);
+  let meter = 0, dir = 1, state = "aim", ball = null, netPulse = 0, trail = [];
+  let makes = 0, shots = 0, streak = 0, best = store.get("ft-best", 0);
+  const upd = () => { $("s-makes").textContent = makes; $("s-pct").textContent = shots ? Math.round(makes / shots * 100) + "%" : "0%"; $("s-streak").textContent = streak; $("s-best").textContent = best; };
+  upd();
+
+  function flash(text, color) { const f = $("flash"); f.textContent = text; f.style.color = color; f.classList.add("show"); setTimeout(() => f.classList.remove("show"), 900); }
+  function shoot() {
+    if (state !== "aim") return;
+    const v = VMIN + meter * (VMAX - VMIN);
+    ball = { x: START.x, y: START.y, vx: Math.cos(ANGLE) * v, vy: -Math.sin(ANGLE) * v, a: 0, scored: false, touched: false, sweet: Math.abs(meter - SWEET) < .025 };
+    state = "flight"; shots++; trail = []; upd();
+  }
+  function finish(made) {
+    if (made) { makes++; streak++; if (streak > best) { best = streak; store.set("ft-best", best); } flash(ball.touched ? "Bucket!" : "Swish!", "#fff"); netPulse = 1; }
+    else { streak = 0; flash("Brick", "#ff8a8a"); }
+    upd();
+  }
+  function bounce(px, py) {
+    const dx = ball.x - px, dy = ball.y - py, d = Math.hypot(dx, dy);
+    if (d < BALL_R + 4 && d > 0) {
+      const nx = dx / d, ny = dy / d, dot = ball.vx * nx + ball.vy * ny;
+      if (dot < 0) { ball.vx -= 1.6 * dot * nx; ball.vy -= 1.6 * dot * ny; ball.vx *= .8; ball.vy *= .8; ball.touched = true; }
+      ball.x = px + nx * (BALL_R + 4); ball.y = py + ny * (BALL_R + 4);
+    }
+  }
+  function step(dt) {
+    if (state === "aim") {
+      meter += dir * dt * .9; if (meter > 1) { meter = 1; dir = -1; } if (meter < 0) { meter = 0; dir = 1; }
+    } else if (state === "flight") {
+      const prevY = ball.y;
+      ball.vy += G * dt; ball.x += ball.vx * dt; ball.y += ball.vy * dt; ball.a += ball.vx * dt / BALL_R;
+      trail.push([ball.x, ball.y]); if (trail.length > 14) trail.shift();
+      bounce(RIM.front, RIM.y); bounce(RIM.back, RIM.y);
+      if (ball.x + BALL_R > BOARD_X && ball.y > 90 && ball.y < 250 && ball.vx > 0) { ball.x = BOARD_X - BALL_R; ball.vx *= -.55; ball.touched = true; }
+      if (!ball.scored && prevY < RIM.y && ball.y >= RIM.y && ball.vy > 0 && ball.x > RIM.front + 6 && ball.x < RIM.back - 6) { ball.scored = true; finish(true); }
+      if (ball.y > CH + 60 || ball.x < -60 || ball.x > CW + 60 || (ball.y > 470 && Math.abs(ball.vy) < 60)) {
+        if (!ball.scored) finish(false);
+        state = "wait"; setTimeout(() => { state = "aim"; ball = null; }, 450);
+      }
+      if (ball.y + BALL_R > 500) { ball.y = 500 - BALL_R; ball.vy *= -.5; ball.vx *= .7; }
+    }
+    netPulse = Math.max(0, netPulse - dt * 2.2);
+  }
+  function drawBall(x, y, a, alpha = 1) {
+    ctx.save(); ctx.globalAlpha = alpha; ctx.translate(x, y); ctx.rotate(a);
+    const g = ctx.createRadialGradient(-5, -6, 2, 0, 0, BALL_R); g.addColorStop(0, "#f59a4b"); g.addColorStop(1, "#b5501a");
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, BALL_R, 0, 7); ctx.fill();
+    ctx.strokeStyle = "#231208"; ctx.lineWidth = 1.8; ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-BALL_R, 0); ctx.lineTo(BALL_R, 0); ctx.moveTo(0, -BALL_R); ctx.lineTo(0, BALL_R); ctx.stroke();
+    ctx.beginPath(); ctx.arc(-BALL_R * 1.25, 0, BALL_R * .95, -.9, .9); ctx.stroke();
+    ctx.beginPath(); ctx.arc(BALL_R * 1.25, 0, BALL_R * .95, Math.PI - .9, Math.PI + .9); ctx.stroke();
+    ctx.restore();
+  }
+  function draw() {
+    ctx.clearRect(0, 0, CW, CH);
+    // floor + free throw line
+    ctx.strokeStyle = "rgba(79,163,220,.35)"; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(0, 500); ctx.lineTo(CW, 500); ctx.stroke();
+    ctx.setLineDash([10, 10]); ctx.beginPath(); ctx.moveTo(START.x - 40, 500); ctx.lineTo(START.x + 40, 500); ctx.stroke(); ctx.setLineDash([]);
+    ctx.font = "600 14px 'JetBrains Mono', monospace"; ctx.fillStyle = "rgba(170,180,190,.7)"; ctx.fillText("FREE THROW LINE", START.x - 62, 526);
+    // pole, backboard, square
+    ctx.fillStyle = "#1b2632"; ctx.fillRect(BOARD_X + 22, 150, 12, 350);
+    ctx.fillRect(BOARD_X + 4, 190, 30, 8);
+    ctx.fillStyle = "rgba(255,255,255,.9)"; ctx.fillRect(BOARD_X, 90, 8, 170);
+    ctx.strokeStyle = "rgba(255,255,255,.35)"; ctx.lineWidth = 2; ctx.strokeRect(BOARD_X - 2, 170, 4, 50);
+    // net
+    const sway = Math.sin(performance.now() / 60) * 6 * netPulse;
+    ctx.strokeStyle = "rgba(255,255,255,.75)"; ctx.lineWidth = 1.5;
+    for (let i = 0; i <= 5; i++) {
+      const x0 = RIM.front + (RIM.back - RIM.front) * i / 5, x1 = RIM.front + 12 + (RIM.back - RIM.front - 24) * i / 5 + sway;
+      ctx.beginPath(); ctx.moveTo(x0, RIM.y); ctx.lineTo(x1, RIM.y + 62 + netPulse * 10); ctx.stroke();
+    }
+    for (let r = 1; r <= 3; r++) {
+      const y = RIM.y + r * 18 + netPulse * r * 3, inset = r * 4;
+      ctx.beginPath(); ctx.moveTo(RIM.front + inset + sway * r / 3, y); ctx.lineTo(RIM.back - inset + sway * r / 3, y); ctx.stroke();
+    }
+    // ball behind the front rim
+    if (ball) {
+      trail.forEach(([x, y], i) => { ctx.fillStyle = `rgba(42,138,214,${i / trail.length * .35})`; ctx.beginPath(); ctx.arc(x, y, BALL_R * (i / trail.length) * .8, 0, 7); ctx.fill(); });
+      drawBall(ball.x, ball.y, ball.a);
+    } else if (state === "aim") {
+      drawBall(START.x, START.y, 0);
+    }
+    // rim on top
+    ctx.strokeStyle = "#e0782a"; ctx.lineWidth = 6; ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(RIM.front, RIM.y); ctx.lineTo(BOARD_X, RIM.y); ctx.stroke();
+    ctx.shadowColor = "rgba(224,120,42,.8)"; ctx.shadowBlur = 12; ctx.beginPath(); ctx.moveTo(RIM.front, RIM.y); ctx.lineTo(RIM.back, RIM.y); ctx.stroke(); ctx.shadowBlur = 0;
+    // power meter
+    const mx = 60, my = 130, mh = 330, mw = 26;
+    ctx.fillStyle = "rgba(255,255,255,.06)"; ctx.fillRect(mx, my, mw, mh);
+    ctx.strokeStyle = "rgba(255,255,255,.6)"; ctx.lineWidth = 2; ctx.strokeRect(mx, my, mw, mh);
+    const sy = my + mh - SWEET * mh;
+    ctx.fillStyle = "rgba(61,220,132,.28)"; ctx.fillRect(mx, sy - .025 * mh, mw, .05 * mh);
+    const fill = (state === "aim" ? meter : ball ? (Math.hypot(ball.vx, ball.vy) - VMIN) / (VMAX - VMIN) : meter);
+    const grd = ctx.createLinearGradient(0, my + mh, 0, my); grd.addColorStop(0, "#00538C"); grd.addColorStop(1, "#5db1ea");
+    ctx.fillStyle = grd; ctx.fillRect(mx + 4, my + mh - Math.max(0, Math.min(1, meter)) * mh, mw - 8, Math.max(0, Math.min(1, meter)) * mh);
+    ctx.fillStyle = "#fff"; ctx.fillRect(mx - 8, my + mh - meter * mh - 2, mw + 16, 4);
+    ctx.font = "600 13px 'JetBrains Mono', monospace"; ctx.fillStyle = "rgba(170,180,190,.8)"; ctx.fillText("POWER", mx - 8, my - 14);
+  }
+  let last = performance.now(), visible = true;
+  new IntersectionObserver((e) => { visible = e[0].isIntersecting; }).observe(cv);
+  function loop(now) {
+    const dt = Math.min(.033, (now - last) / 1000); last = now;
+    if (visible && !document.hidden) { step(reduce && state === "aim" ? dt * .5 : dt); draw(); }
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+  cv.addEventListener("click", shoot);
+  $("shoot").addEventListener("click", shoot);
+  addEventListener("keydown", (e) => {
+    if (e.code !== "Space" || /input|textarea|select|button/i.test(document.activeElement.tagName)) return;
+    const r = cv.getBoundingClientRect(); if (r.bottom < 0 || r.top > innerHeight) return;
+    e.preventDefault(); shoot();
+  });
+  $("reset-game").addEventListener("click", () => { makes = shots = streak = best = 0; store.set("ft-best", 0); upd(); toast("Stats reset"); });
+
+  /* =====================================================================
+     INCLINE TREADMILL CALCULATOR
+     ===================================================================== */
+  const ids = ["tm-speed", "tm-incline", "tm-min", "tm-lb"];
+  const fmt = (n, d = 0) => n.toLocaleString("en-US", { maximumFractionDigits: d, minimumFractionDigits: d });
+  function calc() {
+    const mph = +$("tm-speed").value, inc = +$("tm-incline").value, min = +$("tm-min").value, lb = +$("tm-lb").value;
+    ids.forEach((id) => { const i = $(id); i.style.setProperty("--fill", ((i.value - i.min) / (i.max - i.min) * 100) + "%"); });
+    $("o-speed").textContent = mph.toFixed(1) + " mph";
+    $("o-incline").textContent = inc.toFixed(1) + "%";
+    $("o-min").textContent = min + " min";
+    $("o-lb").textContent = lb + " lb";
+    const mPerMin = mph * 26.8224, grade = inc / 100, kg = lb * 0.4536;
+    const vo2 = 3.5 + 0.1 * mPerMin + 1.8 * mPerMin * grade;           // ml/kg/min
+    const kcal = vo2 * kg / 1000 * 5 * min;
+    const miles = mph * min / 60, vert = miles * 5280 * grade;
+    $("r-cal").textContent = fmt(kcal);
+    $("r-ft").textContent = fmt(vert);
+    $("r-mi").textContent = fmt(miles, 2);
+    $("r-floors").textContent = fmt(vert / 10);
+    const kyle = vert / 2717 * 100;
+    $("r-fun").textContent = vert > 0 ? `That’s ${fmt(kyle, 1)}% of the way up the Burj Khalifa (2,717 ft).` : "Add some incline to start climbing.";
+  }
+  ids.forEach((id) => $(id).addEventListener("input", calc)); calc();
+
+  /* =====================================================================
+     FAVORITE HYPOTHETICALS (add your own to this list)
+     ===================================================================== */
+  const HYPOS = [
+    ["You get one superpower for a pickup game.", "Never miss a shot outside the paint", "Never get tired, play all day"],
+    ["You can start a company with one of these.", "$1M and no co-founder", "No money, but the perfect co-founder"],
+    ["Pick your life for a year.", "Live on Mars with fast Wi-Fi", "Live anywhere on Earth with no internet"],
+    ["Fantasy draft, first pick.", "A guaranteed top-5 player every year", "A 50/50 shot at the league MVP"],
+    ["You can master one skill overnight.", "Every programming language", "Every spoken language"],
+    ["Time travel, one trip only.", "100 years into the future", "Back to any moment in history"],
+    ["Escape room rules.", "Solo with no hints", "With your 3 best friends but a 15 minute clock"],
+    ["Pick your investing edge.", "Know tomorrow’s headlines", "Know which startup wins in 10 years"],
+    ["For the rest of your life.", "Only eat your favorite meal", "Never eat the same meal twice"],
+    ["Hike of a lifetime.", "Summit Everest with a guide", "Walk the whole Appalachian Trail"],
+    ["Game 7, down 2, ball in your hands.", "Drive for the tying layup", "Pull up for the winning three"],
+    ["Board game night.", "Always win at chess", "Always win at Monopoly"],
+    ["The universe question.", "Aliens exist but never contact us", "We’re alone, but we get to explore everywhere"],
+    ["Career fast forward.", "Be a CEO at 30", "Retire comfortably at 40"],
+    ["Adrenaline pick.", "Skydive once a month", "Swim with sharks once a year"],
+  ];
+  let order = HYPOS.map((_, i) => i).sort(() => Math.random() - .5), idx = 0;
+  const picks = store.get("hy-picks", {});
+  function renderHypo() {
+    const [q, a, b] = HYPOS[order[idx]], key = order[idx];
+    $("hy-q").textContent = q;
+    $("hy-a").innerHTML = '<span class="tag">OPTION A</span>'; $("hy-a").append(a);
+    $("hy-b").innerHTML = '<span class="tag">OPTION B</span>'; $("hy-b").append(b);
+    $("hy-a").setAttribute("aria-pressed", picks[key] === "a");
+    $("hy-b").setAttribute("aria-pressed", picks[key] === "b");
+    $("hy-count").textContent = `${Object.keys(picks).length} of ${HYPOS.length} answered`;
+  }
+  ["a", "b"].forEach((side) => $("hy-" + side).addEventListener("click", () => {
+    picks[order[idx]] = side; store.set("hy-picks", picks); renderHypo();
+  }));
+  $("hy-next").addEventListener("click", () => { idx = (idx + 1) % order.length; renderHypo(); });
+  renderHypo();
+
+  /* =====================================================================
+     Cursor streak (matches the main site)
+     ===================================================================== */
+  const fine = matchMedia("(hover: hover) and (pointer: fine)").matches, c = $("trail");
+  if (!fine || reduce) { c.remove(); return; }
+  const tctx = c.getContext("2d"), pts = []; let running = false;
+  const fit = () => { c.width = innerWidth; c.height = innerHeight; }; fit(); addEventListener("resize", fit);
+  addEventListener("pointermove", (e) => { pts.push({ x: e.clientX + 2, y: e.clientY + 2, t: performance.now() }); if (pts.length > 60) pts.shift(); if (!running) { running = true; requestAnimationFrame(drawTrail); } }, { passive: true });
+  function drawTrail(now) {
+    while (pts.length && now - pts[0].t > 420) pts.shift();
+    tctx.clearRect(0, 0, c.width, c.height); tctx.lineCap = "round";
+    for (let i = 1; i < pts.length; i++) {
+      const a = pts[i - 1], b = pts[i], life = 1 - (now - b.t) / 420; if (life <= 0) continue;
+      tctx.beginPath(); tctx.moveTo(a.x, a.y); tctx.lineTo(b.x, b.y);
+      tctx.strokeStyle = `rgba(0,110,190,${.28 * life})`; tctx.lineWidth = 14 * life; tctx.stroke();
+      tctx.strokeStyle = `rgba(60,150,225,${.85 * life})`; tctx.lineWidth = 4.5 * life; tctx.stroke();
+    }
+    if (pts.length) requestAnimationFrame(drawTrail); else { running = false; tctx.clearRect(0, 0, c.width, c.height); }
+  }
+})();
+</script>
+</body>
+</html>
