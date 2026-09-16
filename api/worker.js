@@ -1,19 +1,19 @@
 /**
- * nik-extras: a tiny Cloudflare Worker that keeps your Yahoo + Spotify keys secret
- * and gives extras.html two clean JSON endpoints:
- *   GET /fantasy   → team, record, this week's score, starting lineup
- *   GET /spotify   → now playing + recently played
+ * api/worker.js: runs behind your site on Cloudflare.
+ * Your pages (index.html, extras.html) are served as normal; anything under /api/ comes here.
  *
- * One-time setup routes (to get your refresh tokens):
- *   /yahoo/login   → sign in with Yahoo, then copy the refresh token it shows
- *   /spotify/login → sign in with Spotify, then copy the refresh token it shows
- *   /fantasy/teams → lists your Yahoo team keys (to pick YAHOO_TEAM_KEY)
+ *   GET /api/fantasy        → team, record, this week's score, starting lineup
+ *   GET /api/spotify        → now playing + recently played
  *
- * Secrets / variables to set in Cloudflare (Settings → Variables and Secrets):
+ * One-time setup (only work while SETUP_ENABLED = true):
+ *   /api/yahoo/login        → sign in with Yahoo, copy the refresh token it shows
+ *   /api/spotify/login      → sign in with Spotify, copy the refresh token it shows
+ *   /api/fantasy/teams      → lists your Yahoo team keys
+ *
+ * Secrets (Cloudflare → your Worker → Settings → Variables and Secrets → type "Secret"):
  *   YAHOO_CLIENT_ID, YAHOO_CLIENT_SECRET, YAHOO_REFRESH_TOKEN, YAHOO_TEAM_KEY (optional)
  *   SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REFRESH_TOKEN
- *   ALLOWED_ORIGIN   e.g. https://nikhilprabh32.github.io
- *   SETUP_ENABLED    "true" while setting up; delete it afterwards to switch the login routes off
+ *   SETUP_ENABLED   "true" while setting up; delete it afterwards
  */
 
 const YAHOO_AUTH = "https://api.login.yahoo.com/oauth2/request_auth";
@@ -31,14 +31,16 @@ export default {
 
     try {
       switch (url.pathname) {
-        case "/fantasy":       return cors(await cached(request, ctx, 120, () => fantasy(env)), env);
-        case "/spotify":       return cors(await cached(request, ctx, 20, () => spotify(env)), env);
-        case "/fantasy/teams": return setupOnly(env, () => fantasyTeams(env));
-        case "/yahoo/login":   return setupOnly(env, () => Response.redirect(`${YAHOO_AUTH}?${qs({ client_id: env.YAHOO_CLIENT_ID, redirect_uri: origin + "/yahoo/callback", response_type: "code", scope: env.YAHOO_SCOPE || "fspt-r", language: "en-us" })}`, 302));
-        case "/yahoo/callback":   return setupOnly(env, () => exchange(YAHOO_TOKEN, env.YAHOO_CLIENT_ID, env.YAHOO_CLIENT_SECRET, url.searchParams.get("code"), origin + "/yahoo/callback", "YAHOO_REFRESH_TOKEN"));
-        case "/spotify/login": return setupOnly(env, () => Response.redirect(`${SPOTIFY_AUTH}?${qs({ client_id: env.SPOTIFY_CLIENT_ID, redirect_uri: origin + "/spotify/callback", response_type: "code", scope: "user-read-currently-playing user-read-recently-played" })}`, 302));
-        case "/spotify/callback": return setupOnly(env, () => exchange(SPOTIFY_TOKEN, env.SPOTIFY_CLIENT_ID, env.SPOTIFY_CLIENT_SECRET, url.searchParams.get("code"), origin + "/spotify/callback", "SPOTIFY_REFRESH_TOKEN"));
-        default: return new Response("nik-extras worker is running", { status: 200 });
+        case "/api/fantasy":       return cors(await cached(request, ctx, 120, () => fantasy(env)), env);
+        case "/api/spotify":       return cors(await cached(request, ctx, 20, () => spotify(env)), env);
+        case "/api/fantasy/teams": return setupOnly(env, () => fantasyTeams(env));
+        case "/api/yahoo/login":   return setupOnly(env, () => Response.redirect(`${YAHOO_AUTH}?${qs({ client_id: env.YAHOO_CLIENT_ID, redirect_uri: origin + "/api/yahoo/callback", response_type: "code", scope: env.YAHOO_SCOPE || "fspt-r", language: "en-us" })}`, 302));
+        case "/api/yahoo/callback":   return setupOnly(env, () => exchange(YAHOO_TOKEN, env.YAHOO_CLIENT_ID, env.YAHOO_CLIENT_SECRET, url.searchParams.get("code"), origin + "/api/yahoo/callback", "YAHOO_REFRESH_TOKEN"));
+        case "/api/spotify/login": return setupOnly(env, () => Response.redirect(`${SPOTIFY_AUTH}?${qs({ client_id: env.SPOTIFY_CLIENT_ID, redirect_uri: origin + "/api/spotify/callback", response_type: "code", scope: "user-read-currently-playing user-read-recently-played" })}`, 302));
+        case "/api/spotify/callback": return setupOnly(env, () => exchange(SPOTIFY_TOKEN, env.SPOTIFY_CLIENT_ID, env.SPOTIFY_CLIENT_SECRET, url.searchParams.get("code"), origin + "/api/spotify/callback", "SPOTIFY_REFRESH_TOKEN"));
+        default:
+          // not an API route: serve the website files
+          return env.ASSETS ? env.ASSETS.fetch(request) : new Response("Not found", { status: 404 });
       }
     } catch (err) {
       return cors(json({ error: String(err.message || err) }, 502), env);
@@ -83,7 +85,7 @@ async function refresh(tokenUrl, id, secret, refreshToken) {
   return d.access_token;
 }
 async function exchange(tokenUrl, id, secret, code, redirectUri, name) {
-  if (!code) return new Response("Missing ?code. Start from the /login route.", { status: 400 });
+  if (!code) return new Response("Missing ?code. Start from the /api/…/login route.", { status: 400 });
   const r = await fetch(tokenUrl, {
     method: "POST",
     headers: { Authorization: basic(id, secret), "Content-Type": "application/x-www-form-urlencoded" },
