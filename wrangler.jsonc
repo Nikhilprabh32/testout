@@ -8,10 +8,14 @@
     "binding": "ASSETS",
     "run_worker_first": ["/api/*"]
   },
-  // keep the secrets you add in the Cloudflare dashboard when GitHub redeploys
-  "keep_vars": true
 
-// ...
-  "vars": {},
-  // ...
+  // Public settings (safe to be on GitHub)
+  "vars": {
+    "YAHOO_CLIENT_ID": "dj0yJmk9cXlydkRuemM0UE5MJmQ9WVdrOVlrSndSM0Z4WVRJbWNHbzlNQT09JnM9Y29uc3VtZXJzZWNyZXQmc3Y9MCZ4PTMy",
+    "SPOTIFY_CLIENT_ID": "PASTE_SPOTIFY_CLIENT_ID_HERE",
+    "SETUP_ENABLED": "true"
+  },
+
+  // Keeps the secrets you add in Cloudflare when GitHub redeploys
+  "keep_vars": true
 }
