@@ -310,5 +310,27 @@
   }
 })();
 </script>
+<script>
+/* Light / dark toggle: remembers the visitor's choice */
+(() => {
+  const btn = document.getElementById("theme-toggle");
+  if (!btn) return;
+  const root = document.documentElement;
+  const sync = () => {
+    const light = root.getAttribute("data-theme") === "light";
+    btn.setAttribute("aria-label", light ? "Switch to dark mode" : "Switch to light mode");
+  };
+  btn.addEventListener("click", () => {
+    const next = root.getAttribute("data-theme") === "light" ? "dark" : "light";
+    root.classList.add("theme-anim");
+    root.setAttribute("data-theme", next);
+    try { localStorage.setItem("nik-theme", next); } catch (e) {}
+    sync();
+    setTimeout(() => root.classList.remove("theme-anim"), 450);
+  });
+  sync();
+})();
+</script>
+
 </body>
 </html>
