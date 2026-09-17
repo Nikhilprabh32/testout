@@ -537,6 +537,123 @@
 
   .extras-link { color: #4fa3dc; }
   @media (max-width: 700px) { .extras-li { display: none; } }
+
+/* ================= LIGHT MODE (Mavs home white) ================= */
+  html[data-theme="light"] { --bg: #ffffff; --text: #0b1b2b; --dim: #5f6e7d; --rule: #e3e9ef; --sketch: #34465a; --soft: #34465a; --blue: #00538c; --blue-2: #0a64a8; color-scheme: light; }
+  html[data-theme="light"] .panel { border-color: #002b5e; }
+  html.theme-anim, html.theme-anim *, html.theme-anim *::before, html.theme-anim *::after { transition: background-color .35s ease, color .35s ease, border-color .35s ease, fill .35s ease, stroke .35s ease !important; }
+  @media (hover: hover) and (pointer: fine) {
+    html[data-theme="light"], html[data-theme="light"] a, html[data-theme="light"] button { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3E%3Cpath d='M3 2 L3 24 L9 18.5 L13 27 L17 25.2 L13 16.8 L21 16.8 Z' fill='%23002B5E' stroke='%23ffffff' stroke-width='2' stroke-linejoin='round'/%3E%3C/svg%3E") 3 2, auto; }
+  }
+  html[data-theme="light"] .nav { background: linear-gradient(to bottom, rgba(255,255,255,0.96), rgba(255,255,255,0.82) 70%, rgba(255,255,255,0.0)); }
+  html[data-theme="light"] .links a:hover, html[data-theme="light"] .links a.active { color: #00538c; }
+  html[data-theme="light"] .headline .name { text-shadow: 0 0 28px rgba(0,83,140,0.248); }
+  html[data-theme="light"] .section-title .dot { text-shadow: 0 0 22px rgba(0,83,140,0.315); }
+  html[data-theme="light"] .panel { box-shadow: 0 0 0 1px rgba(0,43,94,0.06), 0 0 38px rgba(0,43,94,0.07); }
+  html[data-theme="light"] .panel > .panel-title { text-shadow: 0 0 24px rgba(0,83,140,0.293); }
+  html[data-theme="light"] .about-me .lede { color: #34465a; }
+  html[data-theme="light"] .pill { border: 1.5px solid rgba(0,43,94,0.85); }
+  html[data-theme="light"] .pill:hover { border-color: #00538c; color: #00538c; box-shadow: 0 0 16px rgba(0,83,140,0.27); }
+  html[data-theme="light"] .proj { border: 1.5px solid rgba(0,43,94,0.8); }
+  html[data-theme="light"] .proj:hover { box-shadow: 0 0 0 1px var(--mavs-blue), 0 0 36px rgba(0,83,140,0.225); }
+  html[data-theme="light"] .shot { border-bottom: 1.5px solid rgba(0,43,94,0.8); background: repeating-linear-gradient(135deg, rgba(0,43,94,0.035) 0 12px, transparent 12px 24px),
+      radial-gradient(120% 90% at 50% 110%, rgba(0,83,140,0.158), transparent 60%); }
+  html[data-theme="light"] .proj-name { background-image: linear-gradient(95deg, #0b1b2b 0%, #00538c 45%, #0a64a8 100%); }
+  html[data-theme="light"] .xp-list::before { background: linear-gradient(to bottom, var(--mavs-blue), rgba(0,83,140,0.068)); }
+  html[data-theme="light"] .xp { border: 1.5px solid rgba(0,43,94,0.8); }
+  html[data-theme="light"] .xp::after { border: 2px solid #00538c; box-shadow: 0 0 14px rgba(0,83,140,0.405); }
+  html[data-theme="light"] .xp:hover { border-color: #0b1b2b; box-shadow: 0 0 0 1px var(--mavs-blue), 0 0 34px rgba(0,83,140,0.203); }
+  html[data-theme="light"] .xp-dates { color: #34465a; }
+  html[data-theme="light"] .xp-org { color: #00538c; }
+  html[data-theme="light"] .spot::before { background: radial-gradient(420px circle at var(--mx) var(--my), rgba(0,83,140,0.072), transparent 60%); }
+  html[data-theme="light"] .progress .bar { background: linear-gradient(90deg, rgba(0,83,140,0.18), #0a64a8); box-shadow: 0 0 10px rgba(0,83,140,0.36); }
+  html[data-theme="light"] .cmd-btn { color: #34465a; border: 1px solid rgba(0,43,94,0.3); }
+  html[data-theme="light"] .cmd-btn:hover, html[data-theme="light"] .cmd-btn:focus-visible { color: #0b1b2b; border-color: #00538c; box-shadow: 0 0 14px rgba(0,83,140,0.27); }
+  html[data-theme="light"] .led { color: #00538c; text-shadow: 0 0 12px rgba(0,83,140,0.405), 0 0 30px rgba(0,83,140,0.315); }
+  html[data-theme="light"] .contact-title .dot { text-shadow: 0 0 22px rgba(0,83,140,0.315); }
+  html[data-theme="light"] .btn { color: #0b1b2b; border: 1.5px solid rgba(0,43,94,0.85); }
+  html[data-theme="light"] .btn:hover { border-color: #00538c; box-shadow: 0 0 22px rgba(0,83,140,0.27); }
+  html[data-theme="light"] .btn.primary { background: #0b1b2b; color: #ffffff; border-color: #0b1b2b; }
+  html[data-theme="light"] .btn.primary:hover { background: #00538c; border-color: #00538c; color: #ffffff; }
+  html[data-theme="light"] .btn:focus-visible { outline: 2px solid #00538c; }
+  html[data-theme="light"] kbd { color: #34465a; border: 1px solid rgba(0,43,94,0.3); }
+  html[data-theme="light"] .top-btn { border: 1.5px solid rgba(0,43,94,0.6); color: #0b1b2b; }
+  html[data-theme="light"] .top-btn:hover { border-color: #00538c; box-shadow: 0 0 18px rgba(0,83,140,0.315); }
+  html[data-theme="light"] .palette { background: rgba(255,255,255,0.6); }
+  html[data-theme="light"] .palette-box { background: #ffffff; border: 1.5px solid rgba(0,43,94,0.85); box-shadow: 0 0 0 1px var(--mavs-blue), 0 30px 80px rgba(255,255,255,0.8), 0 0 60px rgba(0,83,140,0.158); }
+  html[data-theme="light"] .palette input { border-bottom: 1px solid rgba(0,43,94,0.15); color: #0b1b2b; }
+  html[data-theme="light"] .palette li { color: #34465a; }
+  html[data-theme="light"] .palette li[aria-selected="true"] { background: rgba(0,83,140,0.158); color: #0b1b2b; box-shadow: inset 2px 0 0 #00538c; }
+  html[data-theme="light"] .palette-foot { border-top: 1px solid rgba(0,43,94,0.1); }
+  html[data-theme="light"] .toast { background: #0b1b2b; color: #ffffff; box-shadow: 0 0 30px rgba(0,83,140,0.27); }
+  html[data-theme="light"] .about-copy p { color: #34465a; }
+  html[data-theme="light"] .about-copy .lede { color: #0b1b2b; }
+  html[data-theme="light"] .about-copy strong { color: #00538c; }
+  html[data-theme="light"] .about-copy em { color: #0b1b2b; }
+  html[data-theme="light"] .inline-link { color: #00538c; }
+  html[data-theme="light"] .journey-kicker { color: #00538c; }
+  html[data-theme="light"] .journey-step { color: #0b1b2b; }
+  html[data-theme="light"] .map-wrap { border: 1.5px solid rgba(0,43,94,0.55); background: radial-gradient(120% 90% at 50% 100%, rgba(0,83,140,0.072), transparent 60%), #f4f7fb; }
+  html[data-theme="light"] #map .grid-line { stroke: rgba(0,83,140,0.041); }
+  html[data-theme="light"] #map .land { fill: #dde6ef; stroke: rgba(0,83,140,0.158); }
+  html[data-theme="light"] #map .texas { fill: rgba(0,83,140,0.045); stroke: rgba(0,83,140,0.248); }
+  html[data-theme="light"] #map .route { stroke: #0a64a8; }
+  html[data-theme="light"] #map .route-glow { stroke: rgba(0,83,140,0.099); }
+  html[data-theme="light"] #map .pin-label { fill: #0b1b2b; stroke: #f4f7fb; }
+  html[data-theme="light"] #map .pin-num { fill: #ffffff; }
+  html[data-theme="light"] #map .v-label { fill: #566574; stroke: #f4f7fb; }
+  html[data-theme="light"] #map .lived-dot { fill: #0b1b2b; stroke: #0a64a8; }
+  html[data-theme="light"] #map .lived-halo { fill: rgba(0,83,140,0.158); }
+  html[data-theme="light"] #map .visited-dot { fill: #f4f7fb; stroke: #002b5e; }
+  html[data-theme="light"] .map-legend { color: #566574; background: rgba(244,247,251,0.7); }
+  html[data-theme="light"] .lg-visited { border: 1.5px solid #002b5e; }
+  html[data-theme="light"] .stops button { border: 1px solid rgba(0,43,94,0.18); }
+  html[data-theme="light"] .stops button.done { color: #34465a; border-color: rgba(0,83,140,0.203); }
+  html[data-theme="light"] .stops button.now { color: #0b1b2b; border-color: #00538c; box-shadow: 0 0 12px rgba(0,83,140,0.27); }
+  html[data-theme="light"] .stops button:hover { color: #0b1b2b; border-color: #0b1b2b; }
+  html[data-theme="light"] .replay { color: #34465a; border: 1px solid rgba(0,43,94,0.3); }
+  html[data-theme="light"] .replay:hover, html[data-theme="light"] .replay:focus-visible { color: #0b1b2b; border-color: #00538c; box-shadow: 0 0 12px rgba(0,83,140,0.27); }
+  html[data-theme="light"] .pill.more { color: #00538c; border-color: rgba(0,83,140,0.27); }
+  html[data-theme="light"] .pill.more:hover { color: #00538c; border-color: rgba(0,83,140,0.27); }
+  html[data-theme="light"] .edu-school span { color: #00538c; }
+  html[data-theme="light"] .edu-meta dd { border: 1.5px solid #0b1b2b; }
+  html[data-theme="light"] .xp ul.bullets, html[data-theme="light"] .proj ul.bullets { color: #34465a; }
+  html[data-theme="light"] .xp ul.bullets li::marker, html[data-theme="light"] .proj ul.bullets li::marker { color: #0a64a8; }
+  html[data-theme="light"] .live { color: #0a8f4e; }
+  html[data-theme="light"] .honors { border-top: 1px solid rgba(0,43,94,0.14); }
+  html[data-theme="light"] .honors-title { color: #00538c; }
+  html[data-theme="light"] .honors li { border-bottom: 1px solid rgba(0,43,94,0.08); }
+  html[data-theme="light"] .honors .place { color: #00538c; text-shadow: 0 0 12px rgba(0,83,140,0.315); }
+  html[data-theme="light"] .proj-tag { color: #34465a; }
+  html[data-theme="light"] .proj .pill { border-color: rgba(0,83,140,0.248); color: #002b5e; }
+  html[data-theme="light"] .ci-sub { color: #34465a; }
+  html[data-theme="light"] .ci-list li { border-bottom: 1px solid rgba(0,43,94,0.1); }
+  html[data-theme="light"] .ci-list a, html[data-theme="light"] .ci-list span:last-child { color: #0b1b2b; }
+  html[data-theme="light"] .ci-list a:hover { color: #00538c; }
+  html[data-theme="light"] .field span { color: #566574; }
+  html[data-theme="light"] .field input, html[data-theme="light"] .field textarea { background: rgba(0,43,94,0.03); color: #0b1b2b; border: 1.5px solid rgba(0,43,94,0.35); }
+  html[data-theme="light"] .field input:focus, html[data-theme="light"] .field textarea:focus { border-color: #00538c; box-shadow: 0 0 0 3px rgba(0,83,140,0.203); }
+  html[data-theme="light"] .field input[aria-invalid="true"], html[data-theme="light"] .field textarea[aria-invalid="true"] { border-color: #c0392b; }
+  html[data-theme="light"] .form-status { color: #566574; }
+  html[data-theme="light"] .form-status.ok { color: #0a8f4e; }
+  html[data-theme="light"] .form-status.err { color: #c0392b; }
+  html[data-theme="light"] .about-more { color: #00538c; border: 1.5px solid rgba(0,83,140,0.315); }
+  html[data-theme="light"] .about-more:hover, html[data-theme="light"] .about-more:focus-visible { background: #00538c; border-color: #00538c; color: #ffffff; box-shadow: 0 0 22px rgba(0,83,140,0.315); }
+  html[data-theme="light"] .extras-link { color: #00538c; }
+  @media (max-width: 860px) {
+  }
+  html[data-theme="light"] .edu-degree span { color: #34465a; }
+  /* theme toggle button */
+  .theme-btn { width: 36px; height: 36px; display: inline-grid; place-items: center; padding: 0; border-radius: 50%; background: transparent; color: #cfd6dd; border: 1px solid rgba(255,255,255,.3); cursor: pointer; transition: color .2s, border-color .2s, box-shadow .2s, transform .3s; flex: none; }
+  .theme-btn:hover, .theme-btn:focus-visible { color: #fff; border-color: #4fa3dc; box-shadow: 0 0 14px rgba(0,83,140,.6); outline: none; }
+  .theme-btn:active { transform: rotate(40deg) scale(.92); }
+  .theme-btn svg { width: 18px; height: 18px; }
+  .theme-btn .i-sun { display: none; }
+  html[data-theme="light"] .theme-btn { color: #002b5e; border-color: rgba(0,43,94,.35); }
+  html[data-theme="light"] .theme-btn:hover, html[data-theme="light"] .theme-btn:focus-visible { color: #00538c; border-color: #00538c; box-shadow: 0 0 14px rgba(0,83,140,.25); }
+  html[data-theme="light"] .theme-btn .i-sun { display: block; }
+  html[data-theme="light"] .theme-btn .i-moon { display: none; }
+
 </style>
 <script>document.documentElement.classList.add("js");window.echarts=window.echarts||{registerMap:function(n,g){window.__worldGeo=g;document.dispatchEvent(new Event("worldgeo"));}};</script>
 <script async src="https://cdn.jsdelivr.net/npm/echarts@4.9.0/map/js/world.js"></script>
@@ -556,7 +673,14 @@
       <li><a href="#contact" data-target="contact">Contact</a></li>
       <li class="extras-li"><a href="extras.html" class="extras-link">Extra Features</a></li>
     </ul>
-    <button class="cmd-btn" type="button" id="cmd-open" aria-label="Open command menu"><span class="cmd-key">⌘K</span></button>
+    
+      <button class="theme-btn" type="button" id="theme-toggle" aria-label="Switch to light mode" title="Light / dark mode">
+      <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2M12 19.8V22M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2 12h2.2M19.8 12H22M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></svg>
+      
+      </button>
+      
+      <button class="cmd-btn" type="button" id="cmd-open" aria-label="Open command menu"><span class="cmd-key">⌘K</span></button>
     </div>
   </nav>
   <div class="progress" aria-hidden="true"><span class="bar"></span><span class="pball"></span></div>
@@ -1784,6 +1908,30 @@
       requestAnimationFrame(() => requestAnimationFrame(() => { rest.style.maxHeight = "0px"; }));
     }
   });
+})();
+</script>
+
+
+
+<script>
+/* Light / dark toggle: remembers the visitor's choice */
+(() => {
+  const btn = document.getElementById("theme-toggle");
+  if (!btn) return;
+  const root = document.documentElement;
+  const sync = () => {
+    const light = root.getAttribute("data-theme") === "light";
+    btn.setAttribute("aria-label", light ? "Switch to dark mode" : "Switch to light mode");
+  };
+  btn.addEventListener("click", () => {
+    const next = root.getAttribute("data-theme") === "light" ? "dark" : "light";
+    root.classList.add("theme-anim");
+    root.setAttribute("data-theme", next);
+    try { localStorage.setItem("nik-theme", next); } catch (e) {}
+    sync();
+    setTimeout(() => root.classList.remove("theme-anim"), 450);
+  });
+  sync();
 })();
 </script>
 
