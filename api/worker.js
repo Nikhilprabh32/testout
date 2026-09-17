@@ -66,7 +66,7 @@ function setupOnly(env, fn) {
 async function cached(request, ctx, seconds, build) {
   const cache = caches.default;
   const key = new Request(new URL(request.url).origin + new URL(request.url).pathname, { method: "GET" });
-  const hit = await cache.match(key);
+  const hit = new URL(request.url).searchParams.has("fresh") ? null : await cache.match(key);
   if (hit) return hit;
   const res = await build();
   const out = new Response(res.body, res);
@@ -215,5 +215,5 @@ async function spotify(env) {
   const list = (recent.items || []).map((i) => shape(i.track)).filter(Boolean)
     .filter((t, i, arr) => arr.findIndex((x) => x.url === t.url) === i)
     .filter((t) => !track || t.url !== track.url);
-  return json({ isPlaying, track, recent: list.slice(0, 5), updatedAt: new Date().toISOString() });
+    return json({ isPlaying, track, recent: list.slice(0, 5), nowStatus: nowRes.status, updatedAt: new Date().toISOString() });
 }
