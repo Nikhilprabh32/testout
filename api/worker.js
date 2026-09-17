@@ -1,9 +1,12 @@
+import { DurableObject } from "cloudflare:workers";
+
 /**
  * api/worker.js: runs behind your site on Cloudflare.
  * Your pages (index.html, extras.html) are served as normal; anything under /api/ comes here.
  *
  *   GET /api/fantasy        → team, record, this week's score, starting lineup
  *   GET /api/spotify        → now playing + recently played
+ *   POST /api/stats         → visitor heartbeat; returns { active, total }
  *
  * One-time setup (only work while SETUP_ENABLED = true):
  *   /api/yahoo/login        → sign in with Yahoo, copy the refresh token it shows
@@ -31,8 +34,13 @@ export default {
 
     try {
       switch (url.pathname) {
+        case "/api/stats":
+        case "/api/stats/leave": {
+          const stub = env.STATS.get(env.STATS.idFromName("global"));
+          return cors(await stub.fetch(request), env);
+        }
         case "/api/fantasy":       return cors(await cached(request, ctx, 120, () => fantasy(env)), env);
-        case "/api/spotify":       return cors(await cached(request, ctx, 20, () => spotify(env)), env);
+        case "/api/spotify":       return cors(await cached(request, ctx, 5, () => spotify(env)), env);
         case "/api/fantasy/teams": return await setupOnly(env, async () => fantasyTeams(env));
         case "/api/yahoo/login":   return await setupOnly(env, async () => Response.redirect(`${YAHOO_AUTH}?${qs({ client_id: env.YAHOO_CLIENT_ID, redirect_uri: origin + "/api/yahoo/callback", response_type: "code", language: "en-us", ...(env.YAHOO_SCOPE ? { scope: env.YAHOO_SCOPE } : {}) })}`, 302));
         case "/api/yahoo/callback":   return await setupOnly(env, async () => exchange(YAHOO_TOKEN, env.YAHOO_CLIENT_ID, env.YAHOO_CLIENT_SECRET, url.searchParams.get("code"), origin + "/api/yahoo/callback", "YAHOO_REFRESH_TOKEN"));
@@ -55,7 +63,8 @@ const json = (data, status = 200) => new Response(JSON.stringify(data), { status
 function cors(res, env) {
   const r = new Response(res.body, res);
   r.headers.set("Access-Control-Allow-Origin", env.ALLOWED_ORIGIN || "*");
-  r.headers.set("Access-Control-Allow-Methods", "GET, OPTIONS");
+  r.headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  r.headers.set("Access-Control-Allow-Headers", "Content-Type");
   r.headers.set("Vary", "Origin");
   return r;
 }
@@ -215,5 +224,48 @@ async function spotify(env) {
   const list = (recent.items || []).map((i) => shape(i.track)).filter(Boolean)
     .filter((t, i, arr) => arr.findIndex((x) => x.url === t.url) === i)
     .filter((t) => !track || t.url !== track.url);
-    return json({ isPlaying, track, recent: list.slice(0, 5), nowStatus: nowRes.status, updatedAt: new Date().toISOString() });
+  return json({ isPlaying, track, recent: list.slice(0, 5), nowStatus: nowRes.status, updatedAt: new Date().toISOString() });
+}
+
+/* ---------------- Live visitor counter ----------------
+ * One shared Durable Object keeps:
+ *   - who is on the site right now (heartbeats in the last 45 seconds), in memory
+ *   - every unique visitor ID ever seen, plus the running total, in storage
+ * Devices marked as the owner are never counted (and are removed if they were counted before).
+ */
+export class SiteStats extends DurableObject {
+  constructor(ctx, env) {
+    super(ctx, env);
+    this.active = new Map();
+  }
+  async fetch(request) {
+    const url = new URL(request.url);
+    let body = {};
+    if (request.method === "POST") { try { body = JSON.parse((await request.text()) || "{}"); } catch {} }
+    const id = typeof body.id === "string" && /^[a-zA-Z0-9-]{8,64}$/.test(body.id) ? body.id : null;
+    const now = Date.now();
+    let total = (await this.ctx.storage.get("total")) || 0;
+
+    if (id && url.pathname.endsWith("/leave")) {
+      this.active.delete(id);
+    } else if (id && body.owner) {
+      this.active.delete(id);
+      if (await this.ctx.storage.get("v:" + id)) {
+        await this.ctx.storage.delete("v:" + id);
+        total = Math.max(0, total - 1);
+        await this.ctx.storage.put("total", total);
+      }
+    } else if (id) {
+      this.active.set(id, now);
+      if (!(await this.ctx.storage.get("v:" + id))) {
+        await this.ctx.storage.put("v:" + id, now);
+        total += 1;
+        await this.ctx.storage.put("total", total);
+      }
+    }
+    for (const [k, t] of this.active) if (now - t > 45000) this.active.delete(k);
+    return new Response(JSON.stringify({ active: this.active.size, total }), {
+      headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },
+    });
+  }
 }
