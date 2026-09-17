@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Extra Features · Nikhil Prabhu</title>
+  <script>try{var t=localStorage.getItem("nik-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
 <meta name="description" content="Nikhil Prabhu’s live fantasy football team and Spotify listening.">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='2' y='2' width='60' height='60' rx='14' fill='%23000' stroke='%2300538C' stroke-width='4'/%3E%3Ctext x='32' y='43' text-anchor='middle' font-family='Arial Black,Arial,Helvetica,sans-serif' font-weight='900' font-size='30' letter-spacing='-2'%3E%3Ctspan fill='%23fff'%3EN%3C/tspan%3E%3Ctspan fill='%232a8ad6'%3EP%3C/tspan%3E%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -123,6 +124,55 @@
   @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
   @media (max-width: 900px) { .grid { grid-template-columns: minmax(0, 1fr); } }
   @media (max-width: 520px) { .np { grid-template-columns: 84px minmax(0, 1fr); } .np img { width: 84px; height: 84px; } .led { font-size: 1.5rem; } }
+
+/* ================= LIGHT MODE (Mavs home white) ================= */
+  html[data-theme="light"] { --bg: #ffffff; --text: #0b1b2b; --dim: #5f6e7d; --rule: #e3e9ef; --sketch: #34465a; --soft: #34465a; --blue: #00538c; --blue-2: #0a64a8; color-scheme: light; }
+  html[data-theme="light"] .panel { border-color: #002b5e; }
+  html.theme-anim, html.theme-anim *, html.theme-anim *::before, html.theme-anim *::after { transition: background-color .35s ease, color .35s ease, border-color .35s ease, fill .35s ease, stroke .35s ease !important; }
+  @media (hover: hover) and (pointer: fine) {
+    html[data-theme="light"], html[data-theme="light"] a, html[data-theme="light"] button { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3E%3Cpath d='M3 2 L3 24 L9 18.5 L13 27 L17 25.2 L13 16.8 L21 16.8 Z' fill='%23002B5E' stroke='%23ffffff' stroke-width='2' stroke-linejoin='round'/%3E%3C/svg%3E") 3 2, auto; }
+  }
+  html[data-theme="light"] .nav { background: linear-gradient(to bottom, rgba(255,255,255,0.96), rgba(255,255,255,0.82) 70%, rgba(255,255,255,0.0)); }
+  html[data-theme="light"] .page-title .dot { text-shadow: 0 0 22px rgba(0,83,140,0.315); }
+  html[data-theme="light"] .panel { border: 2px solid #0b1b2b; box-shadow: 0 0 38px rgba(0,43,94,0.07); }
+  html[data-theme="light"] .panel-title { text-shadow: 0 0 24px rgba(0,83,140,0.293); }
+  html[data-theme="light"] .kbd { border: 1px solid rgba(0,43,94,0.3); }
+  html[data-theme="light"] .btn { color: #0b1b2b; border: 1.5px solid rgba(0,43,94,0.85); }
+  html[data-theme="light"] .btn:hover { box-shadow: 0 0 20px rgba(0,83,140,0.27); }
+  html[data-theme="light"] .btn.primary { background: #0b1b2b; color: #ffffff; border-color: #0b1b2b; }
+  html[data-theme="light"] .status.live { color: #0a8f4e; }
+  html[data-theme="light"] .setup { border: 1.5px dashed rgba(0,43,94,0.3); }
+  html[data-theme="light"] .team img { border: 1.5px solid rgba(0,43,94,0.4); background: #dde6ef; }
+  html[data-theme="light"] .led { color: #00538c; text-shadow: 0 0 12px rgba(0,83,140,0.405); }
+  html[data-theme="light"] .lbl { color: #566574; }
+  html[data-theme="light"] .matchup { border: 2px solid #0b1b2b; background: repeating-linear-gradient(0deg, rgba(0,43,94,0.025) 0 2px, transparent 2px 4px); }
+  html[data-theme="light"] .winning .led { color: #0a8f4e; text-shadow: 0 0 12px rgba(10,143,78,0.7); }
+  html[data-theme="light"] .lineup td { border-bottom: 1px solid rgba(0,43,94,0.08); }
+  html[data-theme="light"] .tag-status { color: #c0392b; }
+  html[data-theme="light"] .np img { border: 1.5px solid rgba(0,43,94,0.3); background: #dde6ef; }
+  html[data-theme="light"] .np-kicker { color: #0a8f4e; }
+  html[data-theme="light"] .eq b { background: #0a8f4e; }
+  html[data-theme="light"] .bar { background: rgba(0,43,94,0.15); }
+  html[data-theme="light"] .bar span { background: linear-gradient(90deg, #00538c, #00538c); }
+  html[data-theme="light"] .recent li a:hover { background: rgba(0,83,140,0.113); }
+  html[data-theme="light"] .toast { background: #0b1b2b; color: #ffffff; box-shadow: 0 0 30px rgba(0,83,140,0.27); }
+  @media (max-width: 900px) {
+    html[data-theme="light"] .stat + .stat { border-left: 1px solid rgba(0,43,94,0.15); }
+  }
+  @media (max-width: 520px) {
+    html[data-theme="light"] .stat:nth-child(n+3) { border-top: 1px solid rgba(0,43,94,0.15); }
+  }
+  /* theme toggle button */
+  .theme-btn { margin-left: 16px; width: 36px; height: 36px; display: inline-grid; place-items: center; padding: 0; border-radius: 50%; background: transparent; color: #cfd6dd; border: 1px solid rgba(255,255,255,.3); cursor: pointer; transition: color .2s, border-color .2s, box-shadow .2s, transform .3s; flex: none; }
+  .theme-btn:hover, .theme-btn:focus-visible { color: #fff; border-color: #4fa3dc; box-shadow: 0 0 14px rgba(0,83,140,.6); outline: none; }
+  .theme-btn:active { transform: rotate(40deg) scale(.92); }
+  .theme-btn svg { width: 18px; height: 18px; }
+  .theme-btn .i-sun { display: none; }
+  html[data-theme="light"] .theme-btn { margin-left: 16px; color: #002b5e; border-color: rgba(0,43,94,.35); }
+  html[data-theme="light"] .theme-btn:hover, html[data-theme="light"] .theme-btn:focus-visible { color: #00538c; border-color: #00538c; box-shadow: 0 0 14px rgba(0,83,140,.25); }
+  html[data-theme="light"] .theme-btn .i-sun { display: block; }
+  html[data-theme="light"] .theme-btn .i-moon { display: none; }
+
 </style>
 </head>
 <body>
@@ -131,7 +181,13 @@
 <header class="nav">
   <div class="nav-inner">
     <a class="wordmark" href="index.html">Nik.</a>
-    <a class="back" href="index.html">← Back to main site</a>
+        <div style="display:flex;align-items:center">
+      <a class="back" href="index.html">← Back to main site</a>
+      <button class="theme-btn" type="button" id="theme-toggle" aria-label="Switch to light mode" title="Light / dark mode">
+        <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.2M12 19.8V22M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2 12h2.2M19.8 12H22M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></svg>
+      </button>
+    </div>
   </div>
 </header>
 
