@@ -164,7 +164,7 @@
 <script>
 (() => {
   /* ===== Paste your Cloudflare Worker URL here once it's deployed (no trailing slash) ===== */
-  const API_BASE = "/api";
+  const API_BASE = "https://testout.nikhilprabh32.workers.dev/api";
 
   const $ = (id) => document.getElementById(id);
   const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
