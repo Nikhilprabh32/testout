@@ -173,6 +173,41 @@
   html[data-theme="light"] .theme-btn .i-sun { display: block; }
   html[data-theme="light"] .theme-btn .i-moon { display: none; }
 
+
+
+/* ---------- My Teams scoreboard ---------- */
+  .teams { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+  .tcard { position: relative; overflow: hidden; border: 1.5px solid rgba(255,255,255,.35); border-radius: 8px; padding: 16px 16px 14px; display: grid; gap: 12px; background: rgba(255,255,255,.02); }
+  .tcard::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 4px; background: var(--tc, #00538C); }
+  .tcard.live { border-color: #ff5a5a; box-shadow: 0 0 22px rgba(255,90,90,.25); }
+  .t-top { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .t-badge { flex: none; width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; font: 800 .7rem var(--mono); color: #fff; background: var(--tc, #00538C); border: 1.5px solid rgba(255,255,255,.5); letter-spacing: -.02em; }
+  .t-name { font-weight: 800; font-size: 1rem; line-height: 1.2; overflow-wrap: anywhere; }
+  .t-meta { font: 500 .7rem var(--mono); color: var(--dim); letter-spacing: .06em; }
+  .t-body { display: grid; gap: 4px; }
+  .t-score { display: flex; align-items: baseline; gap: 10px; font: 800 1.6rem "Orbitron", var(--mono); font-variant-numeric: tabular-nums; line-height: 1.1; }
+  .t-score .me { color: #fff; } .t-score .opp { color: var(--soft); } .t-score .dash { color: var(--dim); font-size: 1rem; }
+  .t-score .won { color: #7fe0a8; }
+  .t-vs { font-weight: 600; font-size: .92rem; color: var(--soft); }
+  .t-when { font: 700 1.05rem var(--sans); }
+  .t-tag { justify-self: start; display: inline-flex; align-items: center; gap: 6px; font: 700 .66rem var(--mono); letter-spacing: .12em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; border: 1px solid rgba(255,255,255,.3); color: var(--soft); }
+  .t-tag.live { color: #ff6b6b; border-color: rgba(255,107,107,.6); }
+  .t-tag.live i { width: 7px; height: 7px; border-radius: 50%; background: #ff5a5a; animation: t-blink 1.2s infinite; }
+  .t-tag.final { color: var(--blue); border-color: rgba(79,163,220,.5); }
+  @keyframes t-blink { 50% { opacity: .25; } }
+  .t-skel { height: 118px; border-radius: 8px; background: linear-gradient(90deg, rgba(255,255,255,.04), rgba(255,255,255,.09), rgba(255,255,255,.04)); background-size: 200% 100%; animation: t-shimmer 1.4s infinite; }
+  @keyframes t-shimmer { to { background-position: -200% 0; } }
+  html[data-theme="light"] .tcard { border-color: rgba(0,43,94,.3); background: #f7f9fc; }
+  html[data-theme="light"] .t-score .me { color: #0b1b2b; }
+  html[data-theme="light"] .t-score .won { color: #0a8f4e; }
+  html[data-theme="light"] .t-tag { border-color: rgba(0,43,94,.3); }
+  html[data-theme="light"] .t-tag.live { color: #c0392b; border-color: rgba(192,57,43,.5); }
+  html[data-theme="light"] .t-skel { background: linear-gradient(90deg, #eef2f7, #e2e8f0, #eef2f7); background-size: 200% 100%; }
+  @media (max-width: 900px) { .teams { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 520px) { .teams { grid-template-columns: minmax(0, 1fr); } }
+  @media (prefers-reduced-motion: reduce) { .t-tag.live i, .t-skel { animation: none; } }
+
+  
 </style>
 </head>
 <body>
