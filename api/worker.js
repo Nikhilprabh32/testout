@@ -7,6 +7,7 @@ import { DurableObject } from "cloudflare:workers";
  *   GET /api/fantasy        → team, record, this week's score, starting lineup
  *   GET /api/spotify        → now playing + recently played
  *   POST /api/stats         → visitor heartbeat; returns { active, total }
+ *   GET /api/scores         → live score or next game for my teams (ESPN public data)
  *
  * One-time setup (only work while SETUP_ENABLED = true):
  *   /api/yahoo/login        → sign in with Yahoo, copy the refresh token it shows
@@ -39,6 +40,7 @@ export default {
           const stub = env.STATS.get(env.STATS.idFromName("global"));
           return cors(await stub.fetch(request), env);
         }
+        case "/api/scores":        return cors(await cached(request, ctx, 30, () => scores()), env);
         case "/api/fantasy":       return cors(await cached(request, ctx, 120, () => fantasy(env)), env);
         case "/api/spotify":       return cors(await cached(request, ctx, 5, () => spotify(env)), env);
         case "/api/fantasy/teams": return await setupOnly(env, async () => fantasyTeams(env));
@@ -268,4 +270,59 @@ export class SiteStats extends DurableObject {
       headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },
     });
   }
+}
+
+/* ---------------- My teams: live score, or date of the next game ----------------
+ * Uses ESPN's public team endpoints (no key needed). Edit TEAMS to change the list.
+ */
+const TEAMS = [
+  { key: "rams",    label: "LA Rams",            league: "NFL",   sport: "football/nfl",              id: "lar" },
+  { key: "lakers",  label: "LA Lakers",          league: "NBA",   sport: "basketball/nba",            id: "lal" },
+  { key: "mavs",    label: "Dallas Mavericks",   league: "NBA",   sport: "basketball/nba",            id: "dal" },
+  { key: "cowboys", label: "Dallas Cowboys",     league: "NFL",   sport: "football/nfl",              id: "dal" },
+  { key: "sixers",  label: "Philadelphia 76ers", league: "NBA",   sport: "basketball/nba",            id: "phi" },
+  { key: "aggies",  label: "Texas A&M Football", league: "NCAAF", sport: "football/college-football",  id: "245" },
+];
+const scoreOf = (c) => (c && c.score != null ? (typeof c.score === "object" ? (c.score.displayValue ?? c.score.value) : c.score) : null);
+
+async function oneTeam(t) {
+  const base = { key: t.key, label: t.label, league: t.league };
+  try {
+    const r = await fetch(`https://site.api.espn.com/apis/site/v2/sports/${t.sport}/teams/${t.id}`, { cf: { cacheTtl: 30 } });
+    if (!r.ok) throw new Error("ESPN " + r.status);
+    const team = (await r.json()).team || {};
+    const out = {
+      ...base,
+      abbr: team.abbreviation,
+      color: team.color ? "#" + team.color : null,
+      record: team.record?.items?.[0]?.summary || null,
+    };
+    const ev = team.nextEvent?.[0];
+    const comp = ev?.competitions?.[0];
+    if (!ev || !comp) return { ...out, state: "none" };
+    const st = comp.status?.type || ev.status?.type || {};
+    const cs = comp.competitors || [];
+    const me = cs.find((c) => String(c.id) === String(team.id) || c.team?.abbreviation === team.abbreviation) || cs[0] || {};
+    const op = cs.find((c) => c !== me) || {};
+    const tv = (comp.broadcasts || []).map((b) => b.media?.shortName || b.names?.[0]).filter(Boolean)[0] || null;
+    return {
+      ...out,
+      state: st.state || "pre",               // "pre" upcoming, "in" live, "post" final
+      detail: st.shortDetail || st.detail || "",
+      date: ev.date,
+      timeValid: ev.timeValid !== false,
+      homeAway: me.homeAway,
+      myScore: scoreOf(me),
+      opp: { abbr: op.team?.abbreviation, name: op.team?.shortDisplayName || op.team?.displayName, color: op.team?.color ? "#" + op.team.color : null },
+      oppScore: scoreOf(op),
+      winner: me.winner === true ? "me" : op.winner === true ? "opp" : null,
+      tv,
+    };
+  } catch (e) {
+    return { ...base, state: "error" };
+  }
+}
+async function scores() {
+  const teams = await Promise.all(TEAMS.map(oneTeam));
+  return json({ teams, updatedAt: new Date().toISOString() });
 }
