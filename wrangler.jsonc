@@ -20,6 +20,7 @@
     "YAHOO_CLIENT_ID": "dj0yJmk9UFhLZnFGa2tvTTRXJmQ9WVdrOWFIWktiMmREZFZrbWNHbzlNQT09JnM9Y29uc3VtZXJzZWNyZXQmc3Y9MCZ4PTA1",
     "SPOTIFY_CLIENT_ID": "0e4824be9693412fa1887f4ece2d8706",
     "SETUP_ENABLED": "true"
+    "YAHOO_SCOPE": "fspt-r"
   },
 
   // Keeps the secrets you added in Cloudflare when GitHub redeploys
