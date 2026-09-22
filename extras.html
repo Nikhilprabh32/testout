@@ -380,7 +380,6 @@
 <script>
 /* My Teams: live score while playing, otherwise the date of the next game */
 (() => {
-  const API = "https://testout.nikhilprabh32.workers.dev/api/scores";
   const list = document.getElementById("teams"), status = document.getElementById("tm-status");
   if (!list) return;
   const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -417,14 +416,49 @@
     return `<li class="tcard ${t.state === "in" ? "live" : ""}" style="--tc:${esc(tc)}">${top}<div class="t-body">${body}</div></li>`;
   }
 
+  /* Teams to show. Pro teams use ESPN's short code, college teams use ESPN's team number (Texas A&M = 245). */
+  const TEAMS = [
+    { key: "rams",    label: "LA Rams",            league: "NFL",   sport: "football/nfl",             id: "lar" },
+    { key: "lakers",  label: "LA Lakers",          league: "NBA",   sport: "basketball/nba",           id: "lal" },
+    { key: "mavs",    label: "Dallas Mavericks",   league: "NBA",   sport: "basketball/nba",           id: "dal" },
+    { key: "cowboys", label: "Dallas Cowboys",     league: "NFL",   sport: "football/nfl",             id: "dal" },
+    { key: "sixers",  label: "Philadelphia 76ers", league: "NBA",   sport: "basketball/nba",           id: "phi" },
+    { key: "aggies",  label: "Texas A&M Football", league: "NCAAF", sport: "football/college-football", id: "245" },
+  ];
+  const scoreOf = (c) => (c && c.score != null ? (typeof c.score === "object" ? (c.score.displayValue ?? c.score.value) : c.score) : null);
+  // ESPN blocks server requests, so each visitor's browser asks ESPN directly
+  async function oneTeam(t) {
+    const base = { key: t.key, label: t.label, league: t.league };
+    try {
+      const r = await fetch(`https://site.api.espn.com/apis/site/v2/sports/${t.sport}/teams/${t.id}`);
+      if (!r.ok) throw new Error("ESPN " + r.status);
+      const team = (await r.json()).team || {};
+      const out = { ...base, abbr: team.abbreviation, color: team.color ? "#" + team.color : null, record: team.record?.items?.[0]?.summary || null };
+      const ev = team.nextEvent?.[0], comp = ev?.competitions?.[0];
+      if (!ev || !comp) return { ...out, state: "none" };
+      const st = comp.status?.type || ev.status?.type || {};
+      const cs = comp.competitors || [];
+      const me = cs.find((c) => String(c.id) === String(team.id) || c.team?.abbreviation === team.abbreviation) || cs[0] || {};
+      const op = cs.find((c) => c !== me) || {};
+      const tv = (comp.broadcasts || []).map((b) => b.media?.shortName || b.names?.[0]).filter(Boolean)[0] || null;
+      return {
+        ...out, state: st.state || "pre", detail: st.shortDetail || st.detail || "", date: ev.date, timeValid: ev.timeValid !== false,
+        homeAway: me.homeAway, myScore: scoreOf(me), oppScore: scoreOf(op), tv,
+        opp: { abbr: op.team?.abbreviation, name: op.team?.shortDisplayName || op.team?.displayName },
+        winner: me.winner === true ? "me" : op.winner === true ? "opp" : null,
+      };
+    } catch (e) {
+      return { ...base, state: "error" };
+    }
+  }
+
   let timer;
   async function load() {
     clearTimeout(timer);
     let anyLive = false;
     try {
-      const r = await fetch(API);
-      if (!r.ok) throw new Error(r.status);
-      const d = await r.json();
+      const d = { teams: await Promise.all(TEAMS.map(oneTeam)) };
+      if (d.teams.every((t) => t.state === "error")) throw new Error("all failed");
       // live games first, then the soonest upcoming game
       const rank = (t) => (t.state === "in" ? 0 : t.state === "post" ? 1 : t.state === "pre" ? 2 : 3);
       const teams = d.teams.slice().sort((a, b) => rank(a) - rank(b) || new Date(a.date || 8.64e15) - new Date(b.date || 8.64e15));
