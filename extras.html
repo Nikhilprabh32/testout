@@ -388,10 +388,10 @@
   function when(t) {
     const d = new Date(t.date);
     if (isNaN(d)) return t.detail || "TBD";
-    const day = d.toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" });
+        const day = d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "America/Chicago" });
     if (!t.timeValid) return day + " · Time TBD";
-    const time = d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit", timeZoneName: "short" });
-    return day + " · " + time;
+    const time = d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZone: "America/Chicago" });
+    return day + " · " + time + " CT";
   }
   function card(t) {
     const tc = t.color || "#00538C";
@@ -464,7 +464,7 @@
       const teams = d.teams.slice().sort((a, b) => rank(a) - rank(b) || new Date(a.date || 8.64e15) - new Date(b.date || 8.64e15));
       list.innerHTML = teams.map(card).join("");
       anyLive = teams.some((t) => t.state === "in");
-      setStatus(anyLive, anyLive ? "Live now" : "Updated " + new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }));
+      setStatus(anyLive, anyLive ? "Live now" : "Updated " + new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZone: "America/Chicago" }) + " CT");
     } catch (e) {
       setStatus(false, "Scores unavailable right now");
     }
