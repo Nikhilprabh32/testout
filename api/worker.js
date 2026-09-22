@@ -288,7 +288,9 @@ const scoreOf = (c) => (c && c.score != null ? (typeof c.score === "object" ? (c
 async function oneTeam(t) {
   const base = { key: t.key, label: t.label, league: t.league };
   try {
-    const r = await fetch(`https://site.api.espn.com/apis/site/v2/sports/${t.sport}/teams/${t.id}`, { cf: { cacheTtl: 30 } });
+    const r = await fetch(`https://site.api.espn.com/apis/site/v2/sports/${t.sport}/teams/${t.id}`, {
+      headers: { "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36", Accept: "application/json" },
+    });
     if (!r.ok) throw new Error("ESPN " + r.status);
     const team = (await r.json()).team || {};
     const out = {
@@ -319,7 +321,7 @@ async function oneTeam(t) {
       tv,
     };
   } catch (e) {
-    return { ...base, state: "error" };
+        return { ...base, state: "error", error: String(e && e.message || e) };
   }
 }
 async function scores() {
