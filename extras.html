@@ -188,6 +188,7 @@
   .t-score { display: flex; align-items: baseline; gap: 10px; font: 800 1.6rem "Orbitron", var(--mono); font-variant-numeric: tabular-nums; line-height: 1.1; }
   .t-score .me { color: #fff; } .t-score .opp { color: var(--soft); } .t-score .dash { color: var(--dim); font-size: 1rem; }
   .t-score .won { color: #7fe0a8; }
+  .t-score .lost { color: #ff6b6b; }
   .t-vs { font-weight: 600; font-size: .92rem; color: var(--soft); }
   .t-when { font: 700 1.05rem var(--sans); }
   .t-tag { justify-self: start; display: inline-flex; align-items: center; gap: 6px; font: 700 .66rem var(--mono); letter-spacing: .12em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; border: 1px solid rgba(255,255,255,.3); color: var(--soft); }
@@ -200,6 +201,7 @@
   html[data-theme="light"] .tcard { border-color: rgba(0,43,94,.3); background: #f7f9fc; }
   html[data-theme="light"] .t-score .me { color: #0b1b2b; }
   html[data-theme="light"] .t-score .won { color: #0a8f4e; }
+  html[data-theme="light"] .t-score .lost { color: #c0392b; }
   html[data-theme="light"] .t-tag { border-color: rgba(0,43,94,.3); }
   html[data-theme="light"] .t-tag.live { color: #c0392b; border-color: rgba(192,57,43,.5); }
   html[data-theme="light"] .t-skel { background: linear-gradient(90deg, #eef2f7, #e2e8f0, #eef2f7); background-size: 200% 100%; }
@@ -400,11 +402,16 @@
     const vs = t.opp && t.opp.name ? `<div class="t-vs">${t.homeAway === "away" ? "@" : "vs"} ${esc(t.opp.name)}${t.tv ? " · " + esc(t.tv) : ""}</div>` : "";
     let body;
     if (t.state === "in" || t.state === "post") {
-      const live = t.state === "in";
-      const meWon = t.winner === "me", oppWon = t.winner === "opp";
+            const live = t.state === "in";
+      // green when my team is ahead or won, red when behind or lost, plain when tied
+      const mine = Number(t.myScore), theirs = Number(t.oppScore);
+      const diff = Number.isFinite(mine) && Number.isFinite(theirs) ? Math.sign(mine - theirs) : 0;
+      const ahead = t.winner === "me" || (t.winner == null && diff > 0);
+      const behind = t.winner === "opp" || (t.winner == null && diff < 0);
+      const meClass = ahead ? "won" : behind ? "lost" : "";
       body = `<span class="t-tag ${live ? "live" : "final"}">${live ? "<i></i>Live · " + esc(t.detail) : esc(t.detail || "Final")}</span>
-        <div class="t-score" aria-label="${esc(t.label)} ${esc(t.myScore)}, ${esc(t.opp?.name)} ${esc(t.oppScore)}">
-          <span class="me ${meWon ? "won" : ""}">${esc(t.myScore ?? 0)}</span><span class="dash">–</span><span class="opp ${oppWon ? "won" : ""}">${esc(t.oppScore ?? 0)}</span>
+        <div class="t-score" aria-label="${esc(t.label)} ${esc(t.myScore)}, ${esc(t.opp?.name)} ${esc(t.oppScore)}${behind ? ", trailing" : ahead ? ", leading" : ""}">
+          <span class="me ${meClass}">${esc(t.myScore ?? 0)}</span><span class="dash">–</span><span class="opp">${esc(t.oppScore ?? 0)}</span>
         </div>${vs}`;
     } else if (t.state === "pre") {
       body = `<span class="t-tag">Next game</span><div class="t-when">${esc(when(t))}</div>${vs}`;
